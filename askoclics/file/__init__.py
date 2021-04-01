@@ -89,20 +89,16 @@ class FileClient(Client):
         :return: Dictionary containing the information
         """
 
-        if isinstance(files, list):
-            body = {'filesId': files}
-        elif isinstance(files, str):
-            files = [data.strip() for data in files.split(",")]
-            body = {'filesId': files}
-        else:
-            raise AskoclicsParametersError("Files must either be a list or a comma-separated string")
+
+        files = self._parse_input_values(files, "Files")
+        body = {'filesId': files}
 
         return self._api_call("post", "preview_files", body)
 
 
     def guess_columns(self, files):
         """
-        Get the guessed columns for a file
+        Get the guessed columns and headers for a file
 
         :type files: str
         :param files: Comma-separated file IDs
@@ -111,16 +107,10 @@ class FileClient(Client):
         :return: List of files containing info
         """
 
-        if isinstance(files, list):
-            body = {'filesId': files}
-        elif isinstance(files, str):
-            files = [data.strip() for data in files.split(",")]
-            body = {'filesId': files}
-        else:
-            raise AskoclicsParametersError("Files must either be a list or a comma-separated string")
+        files = self._parse_input_values(files, "Files")
+        body = {'filesId': files}
 
         res = self._api_call("post", "preview_files", body)
-
 
         files = []
 
@@ -128,9 +118,13 @@ class FileClient(Client):
             raise AskoclicsApiError(res['errorMessage'])
 
         for file in res.get("previewFiles"):
-            files.append({"error": file["error"], "errorMessage": file["error_message"], "columns": file["data"].get("columns_type", [])})
+            files.append({"error": file["error"], "errorMessage": file["error_message"], "file_id": file["id"] , "header": file["data"].get("header", []), "columns": file["data"].get("columns_type", [])})
 
         return files
+
+
+    def integrate(self, file_id, columns="", headers="", custom_uri=None, external_endpoint=None):
+        pass
 
 
     def delete(self, files):
@@ -144,13 +138,8 @@ class FileClient(Client):
         :return: Dictionary containing the remaining files
         """
 
-        if isinstance(files, list):
-            body = {'filesIdToDelete': files}
-        elif isinstance(files, str):
-            files = [data.strip() for data in files.split(",")]
-            body = {'filesIdToDelete': files}
-        else:
-            raise AskoclicsParametersError("Files must either be a list or a comma-separated string")
+        files = self._parse_input_values(files, "Files")
+        body = {'filesIdToDelete': files}
 
         return self._api_call("post", "delete_files", body)
 

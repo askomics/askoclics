@@ -19,6 +19,7 @@ module:
             - '_check_connectivity'
             - '_get_endpoints'
             - '_read_in_chunks'
+            - '_parse_input_values'
         funcs:
             - get
             - post
