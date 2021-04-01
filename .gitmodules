@@ -1,0 +1,6 @@
+[submodule "command-engine"]
+	path = command-engine
+	url = https://github.com/galaxy-iuc/command-engine.git
+[submodule "scripts"]
+	path = scripts
+	url = https://github.com/galaxy-iuc/command-engine.git

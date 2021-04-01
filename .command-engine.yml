@@ -1,0 +1,27 @@
+project_name: askoclics
+strict: true
+module:
+    base_module: askoclics
+    instance_cls: "<class 'askoclics.AskomicsInstance'>"
+    instance_func: AskomicsInstance
+    instance_args: []
+    instance_kwargs:
+        url: "http://0.0.0.0:80"
+        api_key: ""
+
+    ignore:
+        top_attrs:
+            - 'url'
+            - 'api_key'
+            - 'endpoints'
+            - 'gopublish_version'
+            - 'gopublish_mode'
+            - '_check_connectivity'
+            - '_get_endpoints'
+            - '_read_in_chunks'
+        funcs:
+            - get
+            - post
+
+documentation: |
+    Bla bla bla
