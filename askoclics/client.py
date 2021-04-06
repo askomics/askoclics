@@ -42,8 +42,11 @@ class Client(object):
                 raise AskoclicsApiError("API call returned the following error: '{}'".format(r.json()['errorMessage']))
             elif r.status_code == 502:
                 raise AskoclicsApiError("Unknown server error")
-            else:
-                return r.json()
+    
+            res = r.json()
+            if res['error']:
+                raise AskoclicsApiError(res['errorMessage'])
+            return res
 
         except requests.exceptions.RequestException:
             raise AskoclicsConnectionError("Cannot connect to {}. Please check the connection.".format(self.url))
@@ -64,7 +67,10 @@ class Client(object):
 
         return "{}{}".format(self.url, endpoint)
 
-    def _parse_input_values(self, val, val_name)
+    def _parse_input_values(self, val, val_name):
+
+        if not val:
+            return []
 
         if isinstance(val, list):
             return val

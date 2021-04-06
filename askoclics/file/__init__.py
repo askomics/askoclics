@@ -62,11 +62,14 @@ class FileClient(Client):
         chunk_size = 1024*1024*10
         first = True
         last = False
+        uploaded_size = 0
 
         if file_size <= chunk_size:
             last = True
 
         with open(file_path, "rb") as f:
+            if verbose:
+                print("0%")
 
             for piece in self._read_in_chunks(f, chunk_size):
                 size = sys.getsizeof(piece)
@@ -74,6 +77,9 @@ class FileClient(Client):
                 res = self._api_call("post", "upload_local_file", body)
                 first = False
                 body['path'] = res["path"]
+                uploaded_size += size
+                if verbose:
+                    print("{0:.0%}".format(file_size/uploaded_size * 100))
 
         return res
 
@@ -96,9 +102,9 @@ class FileClient(Client):
         return self._api_call("post", "preview_files", body)
 
 
-    def guess_columns(self, files):
+    def describe(self, files):
         """
-        Get the guessed columns and headers for a file
+        Show file information
 
         :type files: str
         :param files: Comma-separated file IDs
@@ -114,17 +120,112 @@ class FileClient(Client):
 
         files = []
 
-        if res['error']:
-            raise AskoclicsApiError(res['errorMessage'])
-
         for file in res.get("previewFiles"):
-            files.append({"error": file["error"], "errorMessage": file["error_message"], "file_id": file["id"] , "header": file["data"].get("header", []), "columns": file["data"].get("columns_type", [])})
+            if "data" in file:
+                file["data"].pop("content_preview", None)
+            files.append(file)
 
         return files
 
 
-    def integrate(self, file_id, columns="", headers="", custom_uri=None, external_endpoint=None):
-        pass
+    def integrate_csv(self, file_id, columns="", headers="", custom_uri=None, external_endpoint=None):
+        """
+        Send an integration task for a specified file_id
+
+        :type file_id: str
+        :param file_id: File_id
+
+        :type columns: str
+        :param columns: Comma-separated columns (default to detected columns)
+
+        :type headers: str
+        :param headers: Comma-separated headers (default to file headers)
+
+        :type custom_uri: str
+        :param custom_uri: Custom uri
+
+        :type external_endpoint: str
+        :param external_endpoint: External endpoint
+
+        :rtype: dict
+        :return: Dictionary of task information
+        """
+
+        columns = self._parse_input_values(columns, "Columns")
+        headers = self._parse_input_values(columns, "Headers")
+
+        body = {"fileId": file_id, "columns_type": columns, "header_names": headers, "customUri": custom_uri, "externalEndpoint": external_endpoint}
+        return self._api_call("post", "integrate_file", body)
+
+
+    def integrate_bed(self, file_id, entity="", custom_uri=None, external_endpoint=None):
+        """
+        Send an integration task for a specified file_id
+
+        :type file_id: str
+        :param file_id: File_id
+
+        :type entity: str
+        :param entity: Name of the entity (default to file name)
+
+        :type custom_uri: str
+        :param custom_uri: Custom uri
+
+        :type external_endpoint: str
+        :param external_endpoint: External endpoint
+
+        :rtype: dict
+        :return: Dictionary of task information
+        """
+
+        body = {"fileId": file_id, "entity_name": entity, "customUri": custom_uri, "externalEndpoint": external_endpoint}
+        return self._api_call("post", "integrate_file", body)
+
+
+    def integrate_gff(self, file_id, entities="", custom_uri=None, external_endpoint=None):
+        """
+        Send an integration task for a specified file_id
+
+        :type file_id: str
+        :param file_id: File_id
+
+        :type entities: str
+        :param entities: Comma-separated list of entities to integrate. (Default to all available entities)
+
+        :type custom_uri: str
+        :param custom_uri: Custom uri
+
+        :type external_endpoint: str
+        :param external_endpoint: External endpoint
+
+        :rtype: dict
+        :return: Dictionary of task information
+        """
+
+        entities = self._parse_input_values(entities, "Entities")
+        body = {"fileId": file_id, "entities": entities, "customUri": custom_uri, "externalEndpoint": external_endpoint}
+        return self._api_call("post", "integrate_file", body)
+
+
+    def integrate_rdf(self, file_id, custom_uri=None, external_endpoint=None):
+        """
+        Send an integration task for a specified file_id
+
+        :type file_id: str
+        :param file_id: File_id
+
+        :type custom_uri: str
+        :param custom_uri: Custom uri
+
+        :type external_endpoint: str
+        :param external_endpoint: External endpoint
+
+        :rtype: dict
+        :return: Dictionary of task information
+        """
+
+        body = {"fileId": file_id, "customUri": custom_uri, "externalEndpoint": external_endpoint}
+        return self._api_call("post", "integrate_file", body)
 
 
     def delete(self, files):
