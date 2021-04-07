@@ -39,13 +39,20 @@ class Client(object):
                 r = requests.post(url, json=body, headers=headers)
 
             if 400 <= r.status_code <= 499:
-                raise AskoclicsApiError("API call returned the following error: '{}'".format(r.json()['errorMessage']))
+                mes = "API call returned a {} error".format(r.status_code)
+                try:
+                    res = r.json()
+                    if res.get('errorMessage'):
+                        mes += " : {}".format(res.get('errorMessage'))
+                except json.decoder.JSONDecodeError:
+                    pass
+                raise AskoclicsApiError(mes)
             elif r.status_code == 502:
                 raise AskoclicsApiError("Unknown server error")
 
             res = r.json()
             if res['error']:
-                raise AskoclicsApiError(res['errorMessage'])
+                raise AskoclicsApiError(res.get('errorMessage'))
             return res
 
         except requests.exceptions.RequestException:
