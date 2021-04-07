@@ -55,6 +55,7 @@ class FileClient(Client):
             raise AskoclicsParametersError("Local file not found")
 
         file_name = os.path.basename(file_path)
+        internal_path = file_name
         mimetype = mimetypes.guess_type(file_path)[0]
         # Chunk size to 10 Mo
         file_size = os.stat(file_path).st_size
@@ -71,14 +72,19 @@ class FileClient(Client):
                 print("0%")
 
             for piece in self._read_in_chunks(f, chunk_size):
-                size = sys.getsizeof(piece)
-                body = {"chunk": piece.decode("utf-8"), "first": first, "last": last, "type": mimetype, "name": file_name, "size": file_size}
+                if uploaded_size + chunk_size >= file_size:
+                    last = True
+
+                body = {"chunk": piece.decode("utf-8"), "first": first, "last": last, "type": mimetype, "name": file_name, "size": file_size, "path": internal_path}
                 res = self._api_call("post", "upload_local_file", body)
                 first = False
-                body['path'] = res["path"]
-                uploaded_size += size
+                internal_path = res["path"]
+                uploaded_size += chunk_size
+                if uploaded_size > file_size:
+                    uploaded_size = file_size
+
                 if verbose:
-                    print("{0:.0%}".format(file_size / uploaded_size * 100))
+                    print("{0:.0%}".format(uploaded_size / file_size))
 
         return res
 

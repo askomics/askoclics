@@ -6,7 +6,6 @@ from __future__ import unicode_literals
 from future import standard_library
 
 from askoclics.askolib.client import Client
-from askoclics.askolib.exceptions import AskoclicsParametersError
 standard_library.install_aliases()
 
 
@@ -24,7 +23,6 @@ class DatasetClient(Client):
         """
 
         return self._api_call("get", "list_datasets", {})['datasets']
-
 
     def delete(self, datasets):
         """
