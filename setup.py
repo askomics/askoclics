@@ -17,7 +17,7 @@ setup(
     platforms="Posix; MacOS X; Windows",
     entry_points='''
         [console_scripts]
-        askoclics=askoclics.cli:askoclics
+        askoclics=askoclics.cli.cli:askoclics
     ''',
     classifiers=[
         "Intended Audience :: Developers",

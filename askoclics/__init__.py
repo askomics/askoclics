@@ -5,9 +5,9 @@ from __future__ import unicode_literals
 
 from future import standard_library
 
-from askoclics.exceptions import *
-from askoclics.file import FileClient
-from askoclics.dataset import DatasetClient
+from askoclics.askolib.exceptions import AskoclicsAuthError, AskoclicsConnectionError
+from askoclics.askolib.file import FileClient
+from askoclics.askolib.dataset import DatasetClient
 
 import requests
 
@@ -38,7 +38,6 @@ class AskomicsInstance(object):
 
     def __str__(self):
         return '<GopublishInstance at {}>'.format(self.url)
-
 
     def _check_connectivity(self):
         headers = {"X-API-KEY": self.api_key}

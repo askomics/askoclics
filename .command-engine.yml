@@ -1,4 +1,4 @@
-project_name: askoclics
+project_name: askoclics.cli
 strict: true
 module:
     base_module: askoclics
