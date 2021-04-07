@@ -5,7 +5,6 @@ from __future__ import unicode_literals
 
 import mimetypes
 import os
-import sys
 
 from future import standard_library
 
