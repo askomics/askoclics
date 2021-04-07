@@ -22,9 +22,11 @@ class AskoclicsAuthError(Exception):
     """Raised when the login with the provided api key failed"""
     pass
 
+
 class AskoclicsParametersError(Exception):
     """Raised when parameters are missing"""
     pass
+
 
 class AskoclicsNotImplementedError(Exception):
     """Raised when the endpoint does not exists"""
