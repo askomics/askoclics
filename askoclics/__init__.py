@@ -3,9 +3,10 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+from distutils.version import StrictVersion
 from future import standard_library
 
-from askoclics.askolib.exceptions import AskoclicsAuthError, AskoclicsConnectionError
+from askoclics.askolib.exceptions import AskoclicsAuthError, AskoclicsConnectionError, AskoclicsNotImplementedError
 from askoclics.askolib.file import FileClient
 from askoclics.askolib.dataset import DatasetClient
 
@@ -46,7 +47,12 @@ class AskomicsInstance(object):
             r = requests.get("{}/api/start".format(self.url), headers=headers)
             if not r.status_code == 200:
                 raise requests.exceptions.RequestException
+
             data = r.json()
+
+            if StrictVersion(data['config']['version']) < StrictVersion('4.2.0'):
+                raise AskoclicsNotImplementedError("Askomics server version is older than 4.2.0.")
+
             if not data['config'].get("logged"):
                 raise AskoclicsAuthError("Could not login with the provided API key.")
 

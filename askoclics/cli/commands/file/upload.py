@@ -23,7 +23,7 @@ from askoclics.cli.decorators import custom_exception, dict_output
 @custom_exception
 @dict_output
 def cli(ctx, url="", file_path="", verbose=False):
-    """Upload a file from askomics
+    """Upload a file to AskOmics
 
 Output:
 

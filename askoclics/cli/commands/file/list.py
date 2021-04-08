@@ -8,7 +8,7 @@ from askoclics.cli.decorators import custom_exception, list_output
 @custom_exception
 @list_output
 def cli(ctx):
-    """List files added in Askomics
+    """List files added in AskOmics
 
 Output:
 

@@ -9,10 +9,10 @@ from askoclics.cli.decorators import custom_exception, list_output
 @custom_exception
 @list_output
 def cli(ctx, datasets):
-    """Delete a list of files
+    """Send a delete task on a list of datasets
 
 Output:
 
-    List of the remaining files
+    List of the datasets
     """
     return ctx.gi.dataset.delete(datasets)

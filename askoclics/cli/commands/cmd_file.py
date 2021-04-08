@@ -13,7 +13,7 @@ from askoclics.cli.commands.file.upload import cli as upload
 @click.group()
 def cli():
     """
-    Manipulate files managed by Askomics
+    Manipulate files managed by AskOmics
     """
     pass
 

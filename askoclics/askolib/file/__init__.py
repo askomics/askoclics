@@ -5,6 +5,7 @@ from __future__ import unicode_literals
 
 import mimetypes
 import os
+import requests
 
 from future import standard_library
 
@@ -15,12 +16,12 @@ standard_library.install_aliases()
 
 class FileClient(Client):
     """
-    Manipulate files managed by Askomics
+    Manipulate files managed by AskOmics
     """
 
     def list(self):
         """
-        List files added in Askomics
+        List files added in AskOmics
 
         :rtype: list
         :return: List with files
@@ -30,7 +31,7 @@ class FileClient(Client):
 
     def upload(self, url="", file_path="", verbose=False):
         """
-        Upload a file from askomics
+        Upload a file to AskOmics
 
         :type url: str
         :param url: URL to the file
@@ -128,7 +129,7 @@ class FileClient(Client):
 
         return files
 
-    def integrate_csv(self, file_id, columns="", headers="", custom_uri=None, external_endpoint=None):
+    def integrate_csv(self, file_id, columns="", headers="", force=False, custom_uri=None, external_endpoint=None):
         """
         Send an integration task for a specified file_id
 
@@ -141,6 +142,9 @@ class FileClient(Client):
         :type headers: str
         :param headers: Comma-separated headers (default to file headers)
 
+        :type force: bool
+        :param force: Ignore the content type mismatch (ex: force an integer type when AskOmics detects a text type)
+
         :type custom_uri: str
         :param custom_uri: Custom uri
 
@@ -152,7 +156,32 @@ class FileClient(Client):
         """
 
         columns = self._parse_input_values(columns, "Columns")
-        headers = self._parse_input_values(columns, "Headers")
+        headers = self._parse_input_values(headers, "Headers")
+
+        data = self._check_integrate_file(file_id, "csv/tsv")
+
+
+        if headers and not len(headers) == len(data["headers"]):
+            raise AskoclicsParametersError("Incorrect number of headers : {} headers supplied, {} headers expected".format(len(headers), len(data["headers"])))
+
+        if columns:
+            if not len(columns) == len(data["columns_type"]):
+                raise AskoclicsParametersError("Incorrect number of columns : {} columns supplied, {} columns expected".format(len(columns), len(data["columns_type"])))
+
+            expected_columns = self._get_column_types()
+            for index, val in enumerate(columns):
+                if index == 0:
+                    if not val in ["start_entity", "entity"]:
+                        raise AskoclicsParametersError("First column type must be either start_entity or entity")
+                    continue
+
+                if val not in expected_columns:
+                    raise AskoclicsParametersError("Column type {} is not supported by AskOmics. Supported column types are {}".format(val, expected_columns))
+
+            if not force:
+                for index, value in enumerate(data["columns_type"]):
+                    if value == "text" and not columns[index] == "text":
+                        raise AskoclicsParametersError("Type mismatch on provided column {} : provided type is {}, but AskOmics predicted {}. To proceed, use the force parameter".format(index +1, columns[index], value))
 
         body = {"fileId": file_id, "columns_type": columns, "header_names": headers, "customUri": custom_uri, "externalEndpoint": external_endpoint}
         return self._api_call("post", "integrate_file", body)
@@ -177,6 +206,8 @@ class FileClient(Client):
         :return: Dictionary of task information
         """
 
+        self._check_integrate_file(file_id, "bed")
+
         body = {"fileId": file_id, "entity_name": entity, "customUri": custom_uri, "externalEndpoint": external_endpoint}
         return self._api_call("post", "integrate_file", body)
 
@@ -200,6 +231,13 @@ class FileClient(Client):
         :return: Dictionary of task information
         """
 
+        data = self._check_integrate_file(file_id, "gff/gff3")
+
+        if entities:
+            for entity in entities:
+                if not entity in data['entities']:
+                    AskoclicsParametersError("Entity {} was not detected in the file. Detected entities are : {} ".format(entity, data['entities']))
+
         entities = self._parse_input_values(entities, "Entities")
         body = {"fileId": file_id, "entities": entities, "customUri": custom_uri, "externalEndpoint": external_endpoint}
         return self._api_call("post", "integrate_file", body)
@@ -220,6 +258,8 @@ class FileClient(Client):
         :rtype: dict
         :return: Dictionary of task information
         """
+
+        self._check_integrate_file(file_id, "rdf/ttl")
 
         body = {"fileId": file_id, "customUri": custom_uri, "externalEndpoint": external_endpoint}
         return self._api_call("post", "integrate_file", body)
@@ -248,3 +288,34 @@ class FileClient(Client):
             if not data:
                 break
             yield data
+
+    def _check_integrate_file(self, file_id, file_type):
+        # Check if file exists
+        # Then check if type is correct
+        # Return predicted columns/types if csv/bed
+
+        body = {'filesId': [file_id]}
+        res = self._api_call("post", "preview_files", body)
+
+        files = res.get("previewFiles")
+
+        if not files:
+            raise AskoclicsParametersError("File with id {} not found".format(file_id))
+
+        file = files[0]
+
+        if file["error"]:
+            raise AskoclicsParametersError("File is in error state :".format(file["error_message"]))
+
+        if not file["type"] == file_type:
+            raise AskoclicsParametersError("Incorrect file type : Selected type is {}, selected file type is {}".format(file_type, file["type"]))
+
+        return file.get("data")
+
+    def _get_column_types(self):
+        r = requests.get("{}/api/files/columns".format(self.url))
+        if not r.status_code == 200:
+            raise requests.exceptions.RequestException
+
+        data = r.json()
+        return data["types"]

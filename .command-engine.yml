@@ -20,6 +20,8 @@ module:
             - '_get_endpoints'
             - '_read_in_chunks'
             - '_parse_input_values'
+            - '_check_integrate_file'
+            - '_get_column_types'
         funcs:
             - get
             - post
