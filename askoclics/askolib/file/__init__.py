@@ -5,12 +5,14 @@ from __future__ import unicode_literals
 
 import mimetypes
 import os
-import requests
-
-from future import standard_library
 
 from askoclics.askolib.client import Client
 from askoclics.askolib.exceptions import AskoclicsParametersError
+
+from future import standard_library
+
+import requests
+
 standard_library.install_aliases()
 
 

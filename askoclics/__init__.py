@@ -4,11 +4,12 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 from distutils.version import StrictVersion
-from future import standard_library
 
+from askoclics.askolib.dataset import DatasetClient
 from askoclics.askolib.exceptions import AskoclicsAuthError, AskoclicsConnectionError, AskoclicsNotImplementedError
 from askoclics.askolib.file import FileClient
-from askoclics.askolib.dataset import DatasetClient
+
+from future import standard_library
 
 import requests
 
