@@ -160,7 +160,6 @@ class FileClient(Client):
 
         data = self._check_integrate_file(file_id, "csv/tsv")
 
-
         if headers and not len(headers) == len(data["headers"]):
             raise AskoclicsParametersError("Incorrect number of headers : {} headers supplied, {} headers expected".format(len(headers), len(data["headers"])))
 
@@ -171,7 +170,7 @@ class FileClient(Client):
             expected_columns = self._get_column_types()
             for index, val in enumerate(columns):
                 if index == 0:
-                    if not val in ["start_entity", "entity"]:
+                    if val not in ["start_entity", "entity"]:
                         raise AskoclicsParametersError("First column type must be either start_entity or entity")
                     continue
 
@@ -180,8 +179,8 @@ class FileClient(Client):
 
             if not force:
                 for index, value in enumerate(data["columns_type"]):
-                    if value == "text" and not columns[index] == "text":
-                        raise AskoclicsParametersError("Type mismatch on provided column {} : provided type is {}, but AskOmics predicted {}. To proceed, use the force parameter".format(index +1, columns[index], value))
+                    if value == "text" and columns[index] not in ["text", "category"]:
+                        raise AskoclicsParametersError("Type mismatch on provided column {} : provided type is {}, but AskOmics predicted {}. To proceed, use the force parameter".format(index + 1, columns[index], value))
 
         body = {"fileId": file_id, "columns_type": columns, "header_names": headers, "customUri": custom_uri, "externalEndpoint": external_endpoint}
         return self._api_call("post", "integrate_file", body)
@@ -235,7 +234,7 @@ class FileClient(Client):
 
         if entities:
             for entity in entities:
-                if not entity in data['entities']:
+                if entity not in data['entities']:
                     AskoclicsParametersError("Entity {} was not detected in the file. Detected entities are : {} ".format(entity, data['entities']))
 
         entities = self._parse_input_values(entities, "Entities")
@@ -305,7 +304,7 @@ class FileClient(Client):
         file = files[0]
 
         if file["error"]:
-            raise AskoclicsParametersError("File is in error state :".format(file["error_message"]))
+            raise AskoclicsParametersError("File is in error state : {}".format(file["error_message"]))
 
         if not file["type"] == file_type:
             raise AskoclicsParametersError("Incorrect file type : Selected type is {}, selected file type is {}".format(file_type, file["type"]))
