@@ -162,8 +162,8 @@ class FileClient(Client):
 
         data = self._check_integrate_file(file_id, "csv/tsv")
 
-        if headers and not len(headers) == len(data["headers"]):
-            raise AskoclicsParametersError("Incorrect number of headers : {} headers supplied, {} headers expected".format(len(headers), len(data["headers"])))
+        if headers and not len(headers) == len(data["header"]):
+            raise AskoclicsParametersError("Incorrect number of headers : {} headers supplied, {} headers expected".format(len(headers), len(data["header"])))
 
         if columns:
             if not len(columns) == len(data["columns_type"]):
@@ -181,7 +181,7 @@ class FileClient(Client):
 
             if not force:
                 for index, value in enumerate(data["columns_type"]):
-                    if value == "text" and columns[index] not in ["text", "category"]:
+                    if value == "text" and columns[index] not in ["text", "category", "general_relation", "symetric_relation"]:
                         raise AskoclicsParametersError("Type mismatch on provided column {} : provided type is {}, but AskOmics predicted {}. To proceed, use the force parameter".format(index + 1, columns[index], value))
 
         body = {"fileId": file_id, "columns_type": columns, "header_names": headers, "customUri": custom_uri, "externalEndpoint": external_endpoint}
