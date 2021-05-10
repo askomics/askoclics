@@ -63,6 +63,8 @@ class AskomicsInstance(object):
     def _get_endpoints(self):
 
         endpoints = {
+            "start": "/api/start",
+            "sparql_init": "/api/sparql/init",
             "upload_local_file": "/api/files/upload_chunk",
             "upload_url_file": "/api/files/upload_url",
             "list_files": "/api/files",
