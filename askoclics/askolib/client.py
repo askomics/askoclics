@@ -25,7 +25,7 @@ class Client(object):
         self.endpoints = endpoints
         self.api_key = api_key
 
-    def _api_call(self, call_type, endpoint_name, body={}, inline=False):
+    def _api_call(self, call_type, endpoint_name, body={}, inline=False, download=False):
 
         headers = {"X-API-KEY": self.api_key}
         url = self._format_url(call_type, endpoint_name, body)
@@ -50,7 +50,8 @@ class Client(object):
                 raise AskoclicsApiError(mes)
             elif r.status_code == 502:
                 raise AskoclicsApiError("Unknown server error")
-
+            if download:
+                return r.content
             res = r.json()
             if res['error']:
                 raise AskoclicsApiError(res.get('errorMessage'))

@@ -8,6 +8,8 @@ from distutils.version import StrictVersion
 from askoclics.askolib.dataset import DatasetClient
 from askoclics.askolib.exceptions import AskoclicsAuthError, AskoclicsConnectionError, AskoclicsNotImplementedError
 from askoclics.askolib.file import FileClient
+from askoclics.askolib.result import ResultClient
+from askoclics.askolib.sparql import SparqlClient
 
 from future import standard_library
 
@@ -37,6 +39,8 @@ class AskomicsInstance(object):
         args = (self.url, self.endpoints, self.api_key)
         self.file = FileClient(*args)
         self.dataset = DatasetClient(*args)
+        self.result = ResultClient(*args)
+        self.sparql = SparqlClient(*args)
 
     def __str__(self):
         return '<GopublishInstance at {}>'.format(self.url)
@@ -65,6 +69,8 @@ class AskomicsInstance(object):
         endpoints = {
             "start": "/api/start",
             "sparql_init": "/api/sparql/init",
+            "sparql_preview": "/api/sparql/previewquery",
+            "sparql_query": "/api/sparql/savequery",
             "upload_local_file": "/api/files/upload_chunk",
             "upload_url_file": "/api/files/upload_url",
             "list_files": "/api/files",
@@ -73,7 +79,12 @@ class AskomicsInstance(object):
             "integrate_file": "/api/files/integrate",
             "list_datasets": "/api/datasets",
             "publicize_dataset": "/api/datasets/public",
-            "delete_datasets": "/api/datasets/delete"
+            "delete_datasets": "/api/datasets/delete",
+            "list_results": "/api/results",
+            "preview_results": "/api/results/preview",
+            "download_results": "/api/results/download",
+            "delete_results": "/api/results/delete",
+            "sparql_results": "/api/results/sparqlquery"
         }
         return endpoints
 
