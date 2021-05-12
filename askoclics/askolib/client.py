@@ -53,7 +53,7 @@ class Client(object):
             if download:
                 return r.content
             res = r.json()
-            if res['error']:
+            if res.get('error'):
                 raise AskoclicsApiError(res.get('errorMessage'))
             return res
 
