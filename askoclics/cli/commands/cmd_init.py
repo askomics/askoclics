@@ -79,8 +79,8 @@ def cli(ctx, url=None, admin=False, **kwds):
             f.write(CONFIG_AUTH % {
                 'url': url,
                 'api_key': api_key,
-                'proxy_username': username,
-                'proxy_password': password
+                'username': username,
+                'password': password
             })
         else:
             f.write(CONFIG_TEMPLATE % {
