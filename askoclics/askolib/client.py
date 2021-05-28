@@ -24,6 +24,7 @@ class Client(object):
         self.url = url
         self.endpoints = endpoints
         self.api_key = api_key
+        self.auth = auth
 
     def _api_call(self, call_type, endpoint_name, body={}, inline=False, download=False):
 
@@ -33,11 +34,11 @@ class Client(object):
         try:
             if call_type == "get":
                 if inline:
-                    r = requests.get(url, params=body, headers=headers)
+                    r = requests.get(url, params=body, headers=headers, auth=self.auth)
                 else:
-                    r = requests.get(url, headers=headers)
+                    r = requests.get(url, headers=headers, auth=self.auth)
             elif call_type == "post":
-                r = requests.post(url, json=body, headers=headers)
+                r = requests.post(url, json=body, headers=headers, auth=self.auth)
 
             if 400 <= r.status_code <= 499:
                 mes = "API call returned a {} error".format(r.status_code)

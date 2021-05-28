@@ -57,5 +57,11 @@ def _get_instance(instance_name=None):
 def get_instance(instance_name=None):
     conf = _get_instance(instance_name=instance_name)
 
-    return AskomicsInstance(url=conf['url'], api_key=conf['api_key'])
+    username = None
+    password = None
+    if 'proxy_username' in conf and 'proxy_password' in conf:
+        username = conf['proxy_username']
+        password = conf['proxy_password']
+
+    return AskomicsInstance(url=conf['url'], api_key=conf['api_key'], proxy_username=username, proxy_password=password)
 

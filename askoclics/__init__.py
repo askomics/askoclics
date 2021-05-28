@@ -20,10 +20,15 @@ standard_library.install_aliases()
 
 class AskomicsInstance(object):
 
-    def __init__(self, api_key=None, url="http://localhost:80", **kwargs):
+    def __init__(self, api_key=None, url="http://localhost:80", proxy_username="", proxy_password="", **kwargs):
 
         if not api_key:
             raise AskoclicsAuthError("An api key is required")
+
+        if proxy_username and proxy_password:
+            self.auth = (proxy_username, proxy_password)
+        else:
+            self.auth = None
 
         self.api_key = api_key
 
@@ -36,7 +41,7 @@ class AskomicsInstance(object):
         self.endpoints = self._get_endpoints()
 
         # Initialize Clients
-        args = (self.url, self.endpoints, self.api_key)
+        args = (self.url, self.endpoints, self.api_key, self.auth)
         self.file = FileClient(*args)
         self.dataset = DatasetClient(*args)
         self.result = ResultClient(*args)
@@ -49,7 +54,7 @@ class AskomicsInstance(object):
         headers = {"X-API-KEY": self.api_key}
 
         try:
-            r = requests.get("{}/api/start".format(self.url), headers=headers)
+            r = requests.get("{}/api/start".format(self.url), headers=headers, auth=self.auth)
             if not r.status_code == 200:
                 raise requests.exceptions.RequestException
 

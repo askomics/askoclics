@@ -18,6 +18,18 @@ local:
     api_key: "%(api_key)s"
 """
 
+CONFIG_AUTH = """## Gopublish's gopublic: Global Configuration File.
+# Each stanza should contain a single gopublish server to control.
+#
+# You can set the key __default to the name of a default instance
+__default: local
+local:
+    url: "%(url)s"
+    api_key: "%(api_key)s"
+    proxy_username: "%(username)s"
+    proxy_password: "%(password)s"
+"""
+
 SUCCESS_MESSAGE = (
     "Ready to go! Type `askoclics` to get a list of commands you can execute."
 )
@@ -39,9 +51,14 @@ def cli(ctx, url=None, admin=False, **kwds):
         url = click.prompt("Gopublish server url, including http:// and the port if required")
         url.rstrip().rstrip("/")
         api_key = click.prompt("Askomics user's API key")
+        username = ""
+        password = ""
+        if click.confirm("""Is your Gopublish instance running behind an authentication proxy?"""):
+            username = click.prompt("Username")
+            password = click.prompt("Password", hide_input=True)
         info("Testing connection...")
         try:
-            AskomicsInstance(url=url, api_key=api_key)
+            AskomicsInstance(url=url, api_key=api_key, proxy_username=username, proxy_password=password)
             # We do a connection test during startup.
             info("Ok! Everything looks good.")
             break
@@ -57,10 +74,19 @@ def cli(ctx, url=None, admin=False, **kwds):
         return -1
 
     with open(config_path, "w") as f:
-        f.write(CONFIG_TEMPLATE % {
-            'url': url,
-            'api_key': api_key
-        })
+
+        if username and password:
+            f.write(CONFIG_AUTH % {
+                'url': url,
+                'api_key': api_key,
+                'proxy_username': username,
+                'proxy_password': password
+            })
+        else:
+            f.write(CONFIG_TEMPLATE % {
+                'url': url,
+                'api_key': api_key
+            })
         info(SUCCESS_MESSAGE)
 
     # We don't want other users to look into this file
