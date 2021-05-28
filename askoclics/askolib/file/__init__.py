@@ -314,7 +314,7 @@ class FileClient(Client):
         return file.get("data")
 
     def _get_column_types(self):
-        r = requests.get("{}/api/files/columns".format(self.url))
+        r = requests.get("{}/api/files/columns".format(self.url), auth=self.auth)
         if not r.status_code == 200:
             raise requests.exceptions.RequestException
 
