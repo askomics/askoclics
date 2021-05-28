@@ -20,7 +20,7 @@ class Client(object):
     Base client class implementing methods to make queries to the server
     """
 
-    def __init__(self, url, endpoints, api_key):
+    def __init__(self, url, endpoints, api_key, auth):
         self.url = url
         self.endpoints = endpoints
         self.api_key = api_key
