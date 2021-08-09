@@ -60,8 +60,8 @@ class AskomicsInstance(object):
 
             data = r.json()
 
-            if StrictVersion(data['config']['version']) < StrictVersion('4.2.0'):
-                raise AskoclicsNotImplementedError("Askomics server version is older than 4.2.0.")
+            if StrictVersion(data['config']['version']) < StrictVersion('4.3.0'):
+                raise AskoclicsNotImplementedError("Askomics server version is older than 4.3.0.")
 
             if not data['config'].get("logged"):
                 raise AskoclicsAuthError("Could not login with the provided API key.")
