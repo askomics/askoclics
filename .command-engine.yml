@@ -13,6 +13,7 @@ module:
         top_attrs:
             - 'url'
             - 'api_key'
+            - 'auth'
             - 'endpoints'
             - 'gopublish_version'
             - 'gopublish_mode'

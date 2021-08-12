@@ -131,7 +131,7 @@ class FileClient(Client):
 
         return files
 
-    def integrate_csv(self, file_id, columns="", headers="", force=False, custom_uri=None, external_endpoint=None):
+    def integrate_csv(self, file_id, columns="", headers="", force=False, custom_uri=None):
         """
         Send an integration task for a specified file_id
 
@@ -149,9 +149,6 @@ class FileClient(Client):
 
         :type custom_uri: str
         :param custom_uri: Custom uri
-
-        :type external_endpoint: str
-        :param external_endpoint: External endpoint
 
         :rtype: dict
         :return: Dictionary of task information
@@ -184,10 +181,10 @@ class FileClient(Client):
                     if value == "text" and columns[index] not in ["text", "category", "general_relation", "symetric_relation"]:
                         raise AskoclicsParametersError("Type mismatch on provided column {} : provided type is {}, but AskOmics predicted {}. To proceed, use the force parameter".format(index + 1, columns[index], value))
 
-        body = {"fileId": file_id, "columns_type": columns, "header_names": headers, "customUri": custom_uri, "externalEndpoint": external_endpoint}
+        body = {"fileId": file_id, "columns_type": columns, "header_names": headers, "customUri": custom_uri}
         return self._api_call("post", "integrate_file", body)
 
-    def integrate_bed(self, file_id, entity="", custom_uri=None, external_endpoint=None):
+    def integrate_bed(self, file_id, entity="", custom_uri=None):
         """
         Send an integration task for a specified file_id
 
@@ -200,19 +197,16 @@ class FileClient(Client):
         :type custom_uri: str
         :param custom_uri: Custom uri
 
-        :type external_endpoint: str
-        :param external_endpoint: External endpoint
-
         :rtype: dict
         :return: Dictionary of task information
         """
 
         self._check_integrate_file(file_id, "bed")
 
-        body = {"fileId": file_id, "entity_name": entity, "customUri": custom_uri, "externalEndpoint": external_endpoint}
+        body = {"fileId": file_id, "entity_name": entity, "customUri": custom_uri}
         return self._api_call("post", "integrate_file", body)
 
-    def integrate_gff(self, file_id, entities="", custom_uri=None, external_endpoint=None):
+    def integrate_gff(self, file_id, entities="", custom_uri=None):
         """
         Send an integration task for a specified file_id
 
@@ -224,9 +218,6 @@ class FileClient(Client):
 
         :type custom_uri: str
         :param custom_uri: Custom uri
-
-        :type external_endpoint: str
-        :param external_endpoint: External endpoint
 
         :rtype: dict
         :return: Dictionary of task information
@@ -240,18 +231,15 @@ class FileClient(Client):
                     AskoclicsParametersError("Entity {} was not detected in the file. Detected entities are : {} ".format(entity, data['entities']))
 
         entities = self._parse_input_values(entities, "Entities")
-        body = {"fileId": file_id, "entities": entities, "customUri": custom_uri, "externalEndpoint": external_endpoint}
+        body = {"fileId": file_id, "entities": entities, "customUri": custom_uri}
         return self._api_call("post", "integrate_file", body)
 
-    def integrate_rdf(self, file_id, custom_uri=None, external_endpoint=None):
+    def integrate_rdf(self, file_id, external_endpoint=None):
         """
         Send an integration task for a specified file_id
 
         :type file_id: str
         :param file_id: File_id
-
-        :type custom_uri: str
-        :param custom_uri: Custom uri
 
         :type external_endpoint: str
         :param external_endpoint: External endpoint
@@ -262,7 +250,7 @@ class FileClient(Client):
 
         self._check_integrate_file(file_id, "rdf/ttl")
 
-        body = {"fileId": file_id, "customUri": custom_uri, "externalEndpoint": external_endpoint}
+        body = {"fileId": file_id, "externalEndpoint": external_endpoint}
         return self._api_call("post", "integrate_file", body)
 
     def delete(self, files):
