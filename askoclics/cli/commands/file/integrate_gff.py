@@ -15,14 +15,19 @@ from askoclics.cli.decorators import custom_exception, dict_output
     help="Custom uri",
     type=str
 )
+@click.option(
+    "--skip_preview",
+    help="Skip the preview step for big files",
+    is_flag=True
+)
 @pass_context
 @custom_exception
 @dict_output
-def cli(ctx, file_id, entities="", custom_uri=""):
+def cli(ctx, file_id, entities="", custom_uri="", skip_preview=False):
     """Send an integration task for a specified file_id
 
 Output:
 
     Dictionary of task information
     """
-    return ctx.gi.file.integrate_gff(file_id, entities=entities, custom_uri=custom_uri)
+    return ctx.gi.file.integrate_gff(file_id, entities=entities, custom_uri=custom_uri, skip_preview=skip_preview)

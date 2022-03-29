@@ -131,7 +131,7 @@ class FileClient(Client):
 
         return files
 
-    def integrate_csv(self, file_id, columns="", headers="", force=False, custom_uri=None):
+    def integrate_csv(self, file_id, columns="", headers="", force=False, custom_uri=None, skip_preview=False):
         """
         Send an integration task for a specified file_id
 
@@ -150,6 +150,9 @@ class FileClient(Client):
         :type custom_uri: str
         :param custom_uri: Custom uri
 
+        :type skip_preview: bool
+        :param skip_preview: Skip the preview step for big files
+
         :rtype: dict
         :return: Dictionary of task information
         """
@@ -157,34 +160,36 @@ class FileClient(Client):
         columns = self._parse_input_values(columns, "Columns")
         headers = self._parse_input_values(headers, "Headers")
 
-        data = self._check_integrate_file(file_id, "csv/tsv")
+        if not skip_preview:
 
-        if headers and not len(headers) == len(data["header"]):
-            raise AskoclicsParametersError("Incorrect number of headers : {} headers supplied, {} headers expected".format(len(headers), len(data["header"])))
+            data = self._check_integrate_file(file_id, "csv/tsv")
 
-        if columns:
-            if not len(columns) == len(data["columns_type"]):
-                raise AskoclicsParametersError("Incorrect number of columns : {} columns supplied, {} columns expected".format(len(columns), len(data["columns_type"])))
+            if headers and not len(headers) == len(data["header"]):
+                raise AskoclicsParametersError("Incorrect number of headers : {} headers supplied, {} headers expected".format(len(headers), len(data["header"])))
 
-            expected_columns = self._get_column_types()
-            for index, val in enumerate(columns):
-                if index == 0:
-                    if val not in ["start_entity", "entity"]:
-                        raise AskoclicsParametersError("First column type must be either start_entity or entity")
-                    continue
+            if columns:
+                if not len(columns) == len(data["columns_type"]):
+                    raise AskoclicsParametersError("Incorrect number of columns : {} columns supplied, {} columns expected".format(len(columns), len(data["columns_type"])))
 
-                if val not in expected_columns:
-                    raise AskoclicsParametersError("Column type {} is not supported by AskOmics. Supported column types are {}".format(val, expected_columns))
+                expected_columns = self._get_column_types()
+                for index, val in enumerate(columns):
+                    if index == 0:
+                        if val not in ["start_entity", "entity"]:
+                            raise AskoclicsParametersError("First column type must be either start_entity or entity")
+                        continue
 
-            if not force:
-                for index, value in enumerate(data["columns_type"]):
-                    if value == "text" and columns[index] not in ["text", "category", "general_relation", "symetric_relation"]:
-                        raise AskoclicsParametersError("Type mismatch on provided column {} : provided type is {}, but AskOmics predicted {}. To proceed, use the force parameter".format(index + 1, columns[index], value))
+                    if val not in expected_columns:
+                        raise AskoclicsParametersError("Column type {} is not supported by AskOmics. Supported column types are {}".format(val, expected_columns))
+
+                if not force:
+                    for index, value in enumerate(data["columns_type"]):
+                        if value == "text" and columns[index] not in ["text", "category", "general_relation", "symetric_relation"]:
+                            raise AskoclicsParametersError("Type mismatch on provided column {} : provided type is {}, but AskOmics predicted {}. To proceed, use the force parameter".format(index + 1, columns[index], value))
 
         body = {"fileId": file_id, "columns_type": columns, "header_names": headers, "customUri": custom_uri}
         return self._api_call("post", "integrate_file", body)
 
-    def integrate_bed(self, file_id, entity="", custom_uri=None):
+    def integrate_bed(self, file_id, entity="", custom_uri=None, skip_preview=False):
         """
         Send an integration task for a specified file_id
 
@@ -197,16 +202,20 @@ class FileClient(Client):
         :type custom_uri: str
         :param custom_uri: Custom uri
 
+        :type skip_preview: bool
+        :param skip_preview: Skip the preview step for big files
+
         :rtype: dict
         :return: Dictionary of task information
         """
 
-        self._check_integrate_file(file_id, "bed")
+        if not skip_preview:
+            self._check_integrate_file(file_id, "bed")
 
         body = {"fileId": file_id, "entity_name": entity, "customUri": custom_uri}
         return self._api_call("post", "integrate_file", body)
 
-    def integrate_gff(self, file_id, entities="", custom_uri=None):
+    def integrate_gff(self, file_id, entities="", custom_uri=None, skip_preview=False):
         """
         Send an integration task for a specified file_id
 
@@ -219,22 +228,26 @@ class FileClient(Client):
         :type custom_uri: str
         :param custom_uri: Custom uri
 
+        :type skip_preview: bool
+        :param skip_preview: Skip the preview step for big files
+
         :rtype: dict
         :return: Dictionary of task information
         """
 
-        data = self._check_integrate_file(file_id, "gff/gff3")
-
-        if entities:
-            for entity in entities:
-                if entity not in data['entities']:
-                    AskoclicsParametersError("Entity {} was not detected in the file. Detected entities are : {} ".format(entity, data['entities']))
-
         entities = self._parse_input_values(entities, "Entities")
+
+        if not skip_preview:
+            data = self._check_integrate_file(file_id, "gff/gff3")
+            if entities:
+                for entity in entities:
+                    if entity not in data['entities']:
+                        AskoclicsParametersError("Entity {} was not detected in the file. Detected entities are : {} ".format(entity, data['entities']))
+
         body = {"fileId": file_id, "entities": entities, "customUri": custom_uri}
         return self._api_call("post", "integrate_file", body)
 
-    def integrate_rdf(self, file_id, external_endpoint=None):
+    def integrate_rdf(self, file_id, external_endpoint=None, skip_preview=False):
         """
         Send an integration task for a specified file_id
 
@@ -244,11 +257,16 @@ class FileClient(Client):
         :type external_endpoint: str
         :param external_endpoint: External endpoint
 
+        :type skip_preview: bool
+        :param skip_preview: Skip the preview step for big files
+
         :rtype: dict
         :return: Dictionary of task information
+
         """
 
-        self._check_integrate_file(file_id, "rdf/ttl")
+        if not skip_preview:
+            self._check_integrate_file(file_id, "rdf/ttl")
 
         body = {"fileId": file_id, "externalEndpoint": external_endpoint}
         return self._api_call("post", "integrate_file", body)

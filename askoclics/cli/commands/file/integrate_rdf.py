@@ -10,14 +10,19 @@ from askoclics.cli.decorators import custom_exception, dict_output
     help="External endpoint",
     type=str
 )
+@click.option(
+    "--skip_preview",
+    help="Skip the preview step for big files",
+    is_flag=True
+)
 @pass_context
 @custom_exception
 @dict_output
-def cli(ctx, file_id, external_endpoint=""):
+def cli(ctx, file_id, external_endpoint="", skip_preview=False):
     """Send an integration task for a specified file_id
 
 Output:
 
     Dictionary of task information
     """
-    return ctx.gi.file.integrate_rdf(file_id, external_endpoint=external_endpoint)
+    return ctx.gi.file.integrate_rdf(file_id, external_endpoint=external_endpoint, skip_preview=skip_preview)
