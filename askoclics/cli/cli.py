@@ -36,7 +36,7 @@ class Context(object):
             self.log(msg, *args)
 
     def exit(self, exit_code):
-        self.vlog("Exiting gopublic with exit code [%d]" % exit_code)
+        self.vlog("Exiting askoclic with exit code [%d]" % exit_code)
         sys.exit(exit_code)
 
 
@@ -115,7 +115,7 @@ class askoclicsCLI(click.MultiCommand):
 )
 @pass_context
 def askoclics(ctx, instance, verbose, path=None):
-    """Command line wrappers around Gopublic functions."""
+    """Command line wrappers around Askoclics functions."""
     # set config_path if provided
     if path is not None and len(path) > 0:
         set_global_config_path(path)

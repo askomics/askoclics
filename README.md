@@ -16,7 +16,7 @@ Ready to go! Type `askoclics` to get a list of commands you can execute.
 
 ```
 
-This will create a gopublic config file in ~/.askoclics.yml
+This will create an askoclic config file in ~/.askoclics.yml
 
 ## Examples
 

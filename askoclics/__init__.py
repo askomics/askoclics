@@ -48,7 +48,7 @@ class AskomicsInstance(object):
         self.sparql = SparqlClient(*args)
 
     def __str__(self):
-        return '<GopublishInstance at {}>'.format(self.url)
+        return '<AskomicsInstance at {}>'.format(self.url)
 
     def _check_connectivity(self):
         headers = {"X-API-KEY": self.api_key}
@@ -94,6 +94,6 @@ class AskomicsInstance(object):
         return endpoints
 
 
-__version__ = '0.0.1'
+__version__ = '0.0.4'
 
 PROJECT_NAME = "askoclics"

@@ -9,7 +9,7 @@ from askoclics.cli import config
 from askoclics.cli.io import warn, info
 
 CONFIG_TEMPLATE = """## Askomics's askoclics: Global Configuration File.
-# Each stanza should contain a single gopublish server to control.
+# Each stanza should contain a single askomics server to control.
 #
 # You can set the key __default to the name of a default instance
 __default: local
@@ -18,8 +18,8 @@ local:
     api_key: "%(api_key)s"
 """
 
-CONFIG_AUTH = """## Gopublish's gopublic: Global Configuration File.
-# Each stanza should contain a single gopublish server to control.
+CONFIG_AUTH = """## Askomics's askoclics: Global Configuration File.
+# Each stanza should contain a single askomics server to control.
 #
 # You can set the key __default to the name of a default instance
 __default: local
@@ -48,12 +48,12 @@ def cli(ctx, url=None, admin=False, **kwds):
 
     while True:
         # Check environment
-        url = click.prompt("Gopublish server url, including http:// and the port if required")
+        url = click.prompt("Askomics server url, including http:// and the port if required")
         url.rstrip().rstrip("/")
         api_key = click.prompt("Askomics user's API key")
         username = ""
         password = ""
-        if click.confirm("""Is your Gopublish instance running behind an authentication proxy?"""):
+        if click.confirm("""Is your Askomics instance running behind an authentication proxy?"""):
             username = click.prompt("Username")
             password = click.prompt("Password", hide_input=True)
         info("Testing connection...")
