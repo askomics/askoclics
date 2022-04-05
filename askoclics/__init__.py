@@ -94,6 +94,6 @@ class AskomicsInstance(object):
         return endpoints
 
 
-__version__ = '0.0.4'
+__version__ = '0.0.6'
 
 PROJECT_NAME = "askoclics"
