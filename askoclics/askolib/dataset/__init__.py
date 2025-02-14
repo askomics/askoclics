@@ -40,3 +40,39 @@ class DatasetClient(Client):
         body = {'datasetsIdToDelete': datasets}
 
         return self._api_call("post", "delete_datasets", body)
+
+    def set_public(self, dataset_id):
+        """
+        Send a publicize task on a dataset
+
+        :type datasets: str
+        :param dataset: Id of the dataset to publish
+
+        :rtype: list
+        :return: List of the datasets
+        """
+
+        body = {
+            'id': dataset_id,
+            'newStatus': True
+        }
+
+        return self._api_call("post", "publicize_dataset", body)
+
+    def set_private(self, dataset_id):
+        """
+        Send a privatize task on a dataset
+
+        :type datasets: str
+        :param dataset: Id of the dataset to privatize
+
+        :rtype: list
+        :return: List of the datasets
+        """
+
+        body = {
+            'id': dataset_id,
+            'newStatus': False
+        }
+
+        return self._api_call("post", "publicize_dataset", body)

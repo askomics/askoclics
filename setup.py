@@ -5,7 +5,7 @@ with open('requirements.txt') as f:
 
 setup(
     name="askoclics",
-    version='0.0.6',
+    version='0.0.7',
     description="Askomics CLI",
     author="Mateo Boudet",
     author_email="mateo.boudet@inrae.fr",

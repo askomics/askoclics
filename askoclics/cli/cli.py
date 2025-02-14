@@ -141,4 +141,3 @@ def json_loads(data):
             return json.load(handle)
     else:
         return json.loads(data)
-

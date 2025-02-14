@@ -18,4 +18,3 @@ def warn(message, *args):
     if args:
         message = message % args
     click.echo(click.style(message, fg='yellow'), err=True)
-

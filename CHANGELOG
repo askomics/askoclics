@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 This changelog was started for release 0.0.1.
 
+## [0.0.7] - 2025-02-14
+
+### Fixed
+
+- Fixed 'publicize' endpoint (renamed to set_public), and added 'set_private'
+
 ## [0.0.3] - 2022-03-29
 
 ### Added
