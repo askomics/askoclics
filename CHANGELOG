@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 This changelog was started for release 0.0.1.
 
+## [0.0.7] - 2025-02-21
+
+### Added
+
+- Added --public flag for data integration to set a generated dataset to public (admin-only)
+
 ## [0.0.7] - 2025-02-14
 
 ### Fixed

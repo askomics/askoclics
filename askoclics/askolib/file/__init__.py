@@ -131,7 +131,7 @@ class FileClient(Client):
 
         return files
 
-    def integrate_csv(self, file_id, columns="", headers="", force=False, custom_uri=None, skip_preview=False):
+    def integrate_csv(self, file_id, columns="", headers="", force=False, custom_uri=None, skip_preview=False, public=False):
         """
         Send an integration task for a specified file_id
 
@@ -152,6 +152,9 @@ class FileClient(Client):
 
         :type skip_preview: bool
         :param skip_preview: Skip the preview step for big files
+
+        :type public: bool
+        :param public: Set the file as public (admin only)
 
         :rtype: dict
         :return: Dictionary of task information
@@ -186,10 +189,10 @@ class FileClient(Client):
                         if value == "text" and columns[index] not in ["text", "category", "general_relation", "symetric_relation"]:
                             raise AskoclicsParametersError("Type mismatch on provided column {} : provided type is {}, but AskOmics predicted {}. To proceed, use the force parameter".format(index + 1, columns[index], value))
 
-        body = {"fileId": file_id, "columns_type": columns, "header_names": headers, "customUri": custom_uri}
+        body = {"fileId": file_id, "columns_type": columns, "header_names": headers, "customUri": custom_uri, "public": public}
         return self._api_call("post", "integrate_file", body)
 
-    def integrate_bed(self, file_id, entity="", custom_uri=None, skip_preview=False):
+    def integrate_bed(self, file_id, entity="", custom_uri=None, skip_preview=False, public=False):
         """
         Send an integration task for a specified file_id
 
@@ -205,6 +208,9 @@ class FileClient(Client):
         :type skip_preview: bool
         :param skip_preview: Skip the preview step for big files
 
+        :type public: bool
+        :param public: Set the file as public (admin only)
+
         :rtype: dict
         :return: Dictionary of task information
         """
@@ -212,10 +218,10 @@ class FileClient(Client):
         if not skip_preview:
             self._check_integrate_file(file_id, "bed")
 
-        body = {"fileId": file_id, "entity_name": entity, "customUri": custom_uri}
+        body = {"fileId": file_id, "entity_name": entity, "customUri": custom_uri, "public": public}
         return self._api_call("post", "integrate_file", body)
 
-    def integrate_gff(self, file_id, entities="", custom_uri=None, skip_preview=False):
+    def integrate_gff(self, file_id, entities="", custom_uri=None, skip_preview=False, public=False):
         """
         Send an integration task for a specified file_id
 
@@ -231,6 +237,9 @@ class FileClient(Client):
         :type skip_preview: bool
         :param skip_preview: Skip the preview step for big files
 
+        :type public: bool
+        :param public: Set the file as public (admin only)
+
         :rtype: dict
         :return: Dictionary of task information
         """
@@ -244,10 +253,10 @@ class FileClient(Client):
                     if entity not in data['entities']:
                         AskoclicsParametersError("Entity {} was not detected in the file. Detected entities are : {} ".format(entity, data['entities']))
 
-        body = {"fileId": file_id, "entities": entities, "customUri": custom_uri}
+        body = {"fileId": file_id, "entities": entities, "customUri": custom_uri, "public": public}
         return self._api_call("post", "integrate_file", body)
 
-    def integrate_rdf(self, file_id, external_endpoint=None, skip_preview=False):
+    def integrate_rdf(self, file_id, external_endpoint=None, skip_preview=False, public=False):
         """
         Send an integration task for a specified file_id
 
@@ -260,6 +269,9 @@ class FileClient(Client):
         :type skip_preview: bool
         :param skip_preview: Skip the preview step for big files
 
+        :type public: bool
+        :param public: Set the file as public (admin only)
+
         :rtype: dict
         :return: Dictionary of task information
 
@@ -268,7 +280,7 @@ class FileClient(Client):
         if not skip_preview:
             self._check_integrate_file(file_id, "rdf/ttl")
 
-        body = {"fileId": file_id, "externalEndpoint": external_endpoint}
+        body = {"fileId": file_id, "externalEndpoint": external_endpoint, "public": public}
         return self._api_call("post", "integrate_file", body)
 
     def delete(self, files):
